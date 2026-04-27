@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zero Litigation™️ | Premium Dispute Resolution</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Cinzel:wght@400;500;600;700&family=DM+Sans:ital,wght@0,200;0,300;0,400;1,300&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --ink: #06090C;
+  --ink-deep: #010305;
+  --parchment: #F5F2EC;
+  --parchment-warm: #EDE8DF;
+  --gold: #B8965A;
+  --gold-light: #D4AE72;
+  --gold-pale: #E8D5B0;
+  --silver: #8A9BA8;
+  --smoke: rgba(245,242,236,0.06);
+  --easing: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; overflow-x: hidden; }
+
+body {
+  background: var(--ink-deep);
+  color: var(--parchment);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
+  cursor: none;
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+/* ─── CUSTOM CURSOR ─────────────────────────────────── */
+#cursor-orb {
+  position: fixed;
+  width: 8px; height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: width 0.3s var(--easing), height 0.3s var(--easing), background 0.3s;
+  will-change: transform;
+}
+#cursor-trail {
+  position: fixed;
+  width: 40px; height: 40px;
+  border: 1px solid rgba(184,150,90,0.4);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: width 0.5s var(--easing), height 0.5s var(--easing), border-color 0.3s;
+  will-change: transform;
+}
+body.hovered #cursor-orb { width: 6px; height: 6px; }
+body.hovered #cursor-trail { width: 64px; height: 64px; border-color: rgba(184,150,90,0.2); }
+
+/* ─── GRAIN ──────────────────────────────────────────── */
+#grain {
+  position: fixed; top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none; z-index: 9997;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  transform: translateZ(0);
+}
+
+/* ─── AMBIENT CANVAS ──────────────────────────────────── */
+#ambient-canvas {
+  position: fixed; top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none; z-index: 0; opacity: 0.5;
+}
+
+/* ─── SCANLINES OVERLAY ───────────────────────────────── */
+.scanlines {
+  position: fixed; top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none; z-index: 9996;
+  opacity: 0.015;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255,255,255,0.03) 2px,
+    rgba(255,255,255,0.03) 4px
+  );
+}
+
+/* ─── PRELOADER ──────────────────────────────────────── */
+#preloader {
+  position: fixed; inset: 0;
+  background: var(--ink-deep);
+  z-index: 99999;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 32px;
+  overflow: hidden;
+}
+.preloader-wordmark {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(22px, 3vw, 38px);
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  color: var(--parchment);
+  overflow: hidden;
+  position: relative;
+}
+.preloader-wordmark span {
+  display: inline-block;
+  transform: translateY(100%);
+  animation: slide-up 1s var(--easing) 0.3s forwards;
+}
+.preloader-wordmark sup {
+  font-size: 0.4em; vertical-align: super; color: var(--gold);
+  transform: translateY(100%);
+  animation: slide-up 1s var(--easing) 0.5s forwards;
+}
+@keyframes slide-up { to { transform: translateY(0); } }
+.preloader-line {
+  width: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  animation: expand-line 1.2s var(--easing) 0.8s forwards;
+}
+@keyframes expand-line { to { width: 320px; } }
+.preloader-status {
+  font-size: 10px; letter-spacing: 0.4em;
+  text-transform: uppercase; color: var(--silver);
+  opacity: 0;
+  animation: fade-in 0.6s ease 1.2s forwards;
+}
+@keyframes fade-in { to { opacity: 1; } }
+#preloader.exit { animation: preloader-exit 1.2s var(--easing) forwards; }
+@keyframes preloader-exit {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+}
+
+/* ─── NAVIGATION ─────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 28px 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background 0.6s ease, padding 0.4s ease;
+  width: 100%; max-width: 100vw; overflow: hidden;
+}
+nav.scrolled {
+  background: rgba(1,3,5,0.95);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  padding: 18px 60px;
+  border-bottom: 1px solid rgba(184,150,90,0.12);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 14px;
+  text-decoration: none; cursor: none;
+}
+.nav-logo img {
+  height: 48px; width: auto;
+  opacity: 0.92;
+  border-radius: 4px;
+  transition: opacity 0.3s;
+}
+.nav-logo:hover img { opacity: 1; }
+.nav-links { display: flex; gap: 48px; align-items: center; }
+.nav-links a {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 400;
+  text-transform: uppercase; letter-spacing: 0.25em;
+  color: rgba(245,242,236,0.45);
+  text-decoration: none; transition: color 0.3s;
+  cursor: none; position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute; bottom: -4px; left: 0; right: 100%;
+  height: 1px; background: var(--gold);
+  transition: right 0.4s var(--easing);
+}
+.nav-links a:hover { color: var(--parchment); }
+.nav-links a:hover::after { right: 0; }
+.nav-cta {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 400;
+  text-transform: uppercase; letter-spacing: 0.25em;
+  color: var(--gold) !important;
+  border: 1px solid rgba(184,150,90,0.4);
+  padding: 10px 24px;
+  transition: background 0.3s, border-color 0.3s, color 0.3s !important;
+  cursor: none;
+}
+.nav-cta:hover { background: var(--gold) !important; color: var(--ink-deep) !important; border-color: var(--gold) !important; }
+.nav-cta::after { display: none !important; }
+
+/* ─── HERO ───────────────────────────────────────────── */
+.hero {
+  position: relative; min-height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: flex-start;
+  padding: 120px clamp(32px, 8vw, 140px) 160px;
+  overflow: hidden; width: 100%;
+}
+
+/* Full-bleed dark gradient */
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 70% at 65% 40%, #0D1E2E 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 20% 80%, rgba(184,150,90,0.04) 0%, transparent 60%),
+    var(--ink-deep);
+  z-index: 0;
+}
+
+/* Vertical golden line — architectural accent */
+.hero-vline {
+  position: absolute; left: clamp(32px,8vw,140px); top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg, transparent 0%, rgba(184,150,90,0.3) 30%, rgba(184,150,90,0.5) 50%, rgba(184,150,90,0.3) 70%, transparent 100%);
+  z-index: 2; pointer-events: none;
+  animation: vline-reveal 2s var(--easing) 2s both;
+}
+@keyframes vline-reveal { from { scaleY: 0; transform-origin: top; } }
+
+/* Diagonal geometric grid lines — background texture */
+.hero-grid {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden;
+}
+.hero-grid::before {
+  content: '';
+  position: absolute; inset: -50%;
+  background-image:
+    linear-gradient(rgba(184,150,90,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(184,150,90,0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+  transform: perspective(800px) rotateX(60deg) translateY(-20%);
+  transform-origin: center bottom;
+  animation: grid-in 2s var(--easing) 1.5s both;
+}
+@keyframes grid-in { from { opacity: 0; transform: perspective(800px) rotateX(60deg) translateY(0%); } }
+
+/* Large ornamental circle */
+.hero-ornament {
+  position: absolute; right: -5vw; top: 50%;
+  transform: translateY(-50%);
+  width: clamp(500px, 65vw, 900px); height: clamp(500px, 65vw, 900px);
+  border-radius: 50%;
+  border: 1px solid rgba(184,150,90,0.05);
+  pointer-events: none; z-index: 1;
+  animation: slow-rotate 80s linear infinite, orb-fade 1s ease 2s both;
+}
+.hero-ornament::before {
+  content: ''; position: absolute; inset: 60px; border-radius: 50%;
+  border: 1px solid rgba(184,150,90,0.04);
+}
+.hero-ornament::after {
+  content: ''; position: absolute; inset: 140px; border-radius: 50%;
+  border: 1px solid rgba(184,150,90,0.06);
+}
+@keyframes slow-rotate { to { transform: translateY(-50%) rotate(360deg); } }
+@keyframes orb-fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* Floating gold dust particles */
+.hero-particles { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: var(--gold);
+  border-radius: 50%;
+  opacity: 0;
+  animation: particle-float var(--dur, 8s) ease-in-out var(--delay, 0s) infinite;
+}
+@keyframes particle-float {
+  0% { opacity: 0; transform: translateY(0) translateX(0); }
+  20% { opacity: var(--max-op, 0.4); }
+  80% { opacity: var(--max-op, 0.4); }
+  100% { opacity: 0; transform: translateY(-120px) translateX(var(--drift, 20px)); }
+}
+
+/* Hero content */
+.hero-eyebrow {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px; font-weight: 400;
+  letter-spacing: 0.5em; text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 32px;
+  display: flex; align-items: center; gap: 20px;
+  position: relative; z-index: 2;
+  opacity: 0; transform: translateY(20px);
+  animation: reveal-up 1s var(--easing) 2s forwards;
+  padding-left: 32px;
+}
+.hero-eyebrow::before {
+  content: ''; display: block; width: 40px; height: 1px; background: var(--gold);
+}
+
+.hero-headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(56px, 8vw, 118px);
+  font-weight: 300; line-height: 1.0;
+  letter-spacing: -0.03em;
+  max-width: 960px;
+  position: relative; z-index: 2;
+  margin-bottom: 44px;
+  padding-left: 32px;
+}
+.hero-headline .line { display: block; overflow: hidden; }
+.hero-headline .line span {
+  display: block; transform: translateY(110%);
+  animation: reveal-up 1.2s var(--easing) forwards;
+}
+.hero-headline .line:nth-child(1) span { animation-delay: 2.1s; }
+.hero-headline .line:nth-child(2) span { animation-delay: 2.25s; }
+.hero-headline .line:nth-child(3) span { animation-delay: 2.4s; }
+.hero-headline .italic-word { font-style: italic; color: var(--gold-light); }
+
+/* Word with split letter animation */
+.hero-headline .line:nth-child(2) span { letter-spacing: -0.03em; }
+
+.hero-subtext {
+  font-size: clamp(15px, 1.4vw, 17px);
+  color: rgba(245,242,236,0.4);
+  max-width: 520px; line-height: 1.9; font-weight: 300;
+  position: relative; z-index: 2;
+  margin-bottom: 56px; padding-left: 32px;
+  opacity: 0; transform: translateY(20px);
+  animation: reveal-up 1s var(--easing) 2.6s forwards;
+}
+
+.hero-actions {
+  display: flex; align-items: center; gap: 48px;
+  position: relative; z-index: 2;
+  opacity: 0; transform: translateY(20px);
+  animation: reveal-up 1s var(--easing) 2.8s forwards;
+  padding-left: 32px;
+}
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 400;
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--ink-deep); background: var(--gold);
+  padding: 18px 44px; text-decoration: none; cursor: none;
+  position: relative; overflow: hidden; transition: color 0.4s;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+.btn-primary::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--gold-light);
+  transform: translateX(-101%);
+  transition: transform 0.6s var(--easing);
+}
+.btn-primary:hover::before { transform: translateX(0); }
+.btn-primary span { position: relative; z-index: 1; }
+.btn-primary .icon { position: relative; z-index: 1; transition: transform 0.4s var(--easing); }
+.btn-primary:hover .icon { transform: translateX(6px); }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 400;
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: rgba(245,242,236,0.45); text-decoration: none; cursor: none;
+  transition: color 0.3s;
+}
+.btn-ghost:hover { color: var(--parchment); }
+.btn-ghost .icon {
+  width: 36px; height: 36px;
+  border: 1px solid rgba(245,242,236,0.15); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; transition: border-color 0.3s, transform 0.4s var(--easing);
+}
+.btn-ghost:hover .icon { border-color: var(--gold); transform: translateX(4px); }
+
+/* Hero bottom stats strip */
+.hero-stats-strip {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  z-index: 3;
+  border-top: 1px solid rgba(184,150,90,0.08);
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  background: rgba(1,3,5,0.5);
+  backdrop-filter: blur(20px);
+}
+.hero-stat {
+  padding: 24px 48px;
+  border-right: 1px solid rgba(184,150,90,0.08);
+  display: flex; align-items: center; gap: 20px;
+  opacity: 0; animation: reveal-up 0.8s var(--easing) forwards;
+}
+.hero-stat:nth-child(1) { animation-delay: 3.0s; padding-left: clamp(32px,8vw,140px); }
+.hero-stat:nth-child(2) { animation-delay: 3.1s; }
+.hero-stat:nth-child(3) { border-right: none; animation-delay: 3.2s; }
+.hero-stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px; font-weight: 300; color: var(--parchment); line-height: 1;
+}
+.hero-stat-num sup { font-size: 0.4em; color: var(--gold); vertical-align: super; }
+.hero-stat-label {
+  font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: rgba(245,242,236,0.25); line-height: 1.5;
+}
+
+.hero-scroll-indicator {
+  position: absolute; bottom: 140px; right: 60px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  z-index: 3;
+  opacity: 0; animation: fade-in 1s ease 3.4s forwards;
+}
+.hero-scroll-indicator span {
+  font-size: 9px; letter-spacing: 0.4em; text-transform: uppercase;
+  color: rgba(245,242,236,0.2); writing-mode: vertical-rl;
+}
+.scroll-line {
+  width: 1px; height: 60px;
+  background: linear-gradient(180deg, var(--gold), transparent);
+  animation: scroll-pulse 2s ease infinite;
+}
+@keyframes scroll-pulse {
+  0%,100% { opacity: 0.4; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.1); }
+}
+@keyframes reveal-up { to { transform: translateY(0); opacity: 1; } }
+
+/* ─── SECTION BASE ───────────────────────────────────── */
+section { position: relative; z-index: 1; }
+
+.section-eyebrow {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 9px; letter-spacing: 0.5em;
+  text-transform: uppercase; color: var(--gold);
+  display: flex; align-items: center; gap: 16px; margin-bottom: 24px;
+}
+.section-eyebrow::before {
+  content: ''; display: block; width: 30px; height: 1px; background: var(--gold);
+}
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(38px, 4.5vw, 68px);
+  font-weight: 300; line-height: 1.05;
+  letter-spacing: -0.02em; color: var(--parchment); margin-bottom: 32px;
+}
+
+/* ─── ABOUT ───────────────────────────────────────────── */
+.about {
+  padding: 180px clamp(32px, 8vw, 140px);
+  max-width: 900px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Big roman numeral background watermark */
+.about::before {
+  content: 'I';
+  position: absolute; right: -40px; top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 420px; font-weight: 300;
+  color: rgba(184,150,90,0.025);
+  pointer-events: none; line-height: 1; user-select: none;
+}
+
+.about-content {}
+.about-lead {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(20px, 2.2vw, 28px);
+  font-weight: 300; line-height: 1.6; color: var(--parchment);
+  font-style: italic; margin-bottom: 32px; padding-bottom: 32px;
+  border-bottom: 1px solid rgba(184,150,90,0.15);
+}
+.about-body {
+  font-size: 15px; color: rgba(245,242,236,0.4);
+  line-height: 1.9; margin-bottom: 52px;
+}
+
+/* ─── ADVANTAGES ──────────────────────────────────────── */
+.advantages {
+  padding: 0 clamp(32px, 8vw, 140px) 180px;
+  overflow: hidden; width: 100%;
+}
+.advantages-header {
+  margin-bottom: 80px; display: flex; justify-content: space-between; align-items: flex-end;
+}
+.advantages-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid rgba(184,150,90,0.1);
+}
+.advantage-item {
+  padding: 64px 36px; border-right: 1px solid rgba(184,150,90,0.08);
+  border-bottom: 1px solid rgba(184,150,90,0.08);
+  position: relative; overflow: hidden; transition: background 0.5s;
+}
+.advantage-item:last-child { border-right: none; }
+
+/* Animated fill on hover */
+.advantage-item::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(184,150,90,0.06) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.5s;
+}
+.advantage-item:hover::before { opacity: 1; }
+
+.advantage-item::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 100%;
+  height: 2px; background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  transition: right 0.6s var(--easing);
+}
+.advantage-item:hover::after { right: 0; }
+.advantage-item:hover { background: rgba(184,150,90,0.02); }
+
+.adv-num {
+  font-family: 'Cinzel', serif; font-size: 11px;
+  letter-spacing: 0.3em; color: var(--gold); margin-bottom: 48px; opacity: 0.6;
+}
+.adv-icon {
+  width: 52px; height: 52px;
+  border: 1px solid rgba(184,150,90,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 32px;
+  transition: border-color 0.3s, background 0.3s, transform 0.4s var(--ease-spring);
+}
+.advantage-item:hover .adv-icon {
+  border-color: var(--gold); background: rgba(184,150,90,0.08); transform: scale(1.08);
+}
+.adv-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 500; color: var(--parchment); margin-bottom: 16px;
+}
+.adv-desc { font-size: 13px; color: rgba(245,242,236,0.3); line-height: 1.9; }
+
+/* ─── SERVICES ───────────────────────────────────────── */
+.services-section {
+  background: var(--parchment);
+  padding: 160px clamp(32px, 8vw, 140px);
+  overflow: hidden; width: 100%;
+  position: relative;
+}
+
+/* Geometric background accent */
+.services-section::before {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 40%; height: 100%;
+  background: linear-gradient(180deg, rgba(184,150,90,0.04) 0%, transparent 100%);
+  border-left: 1px solid rgba(184,150,90,0.08);
+  pointer-events: none;
+}
+
+.services-section .section-eyebrow { color: var(--gold); }
+.services-section .section-title { color: var(--ink); }
+
+.services-layout {
+  display: grid; grid-template-columns: 340px 1fr;
+  gap: 100px; align-items: start; margin-top: 80px;
+}
+.services-nav { display: flex; flex-direction: column; position: sticky; top: 100px; }
+.service-tab {
+  padding: 24px 0; border-bottom: 1px solid rgba(6,9,12,0.07);
+  cursor: none; position: relative; transition: padding-left 0.4s var(--easing);
+}
+.service-tab::before {
+  content: ''; position: absolute; left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 0; height: 1px; background: var(--gold);
+  transition: width 0.4s var(--easing);
+}
+.service-tab.active::before, .service-tab:hover::before { width: 24px; }
+.service-tab.active, .service-tab:hover { padding-left: 36px; }
+.service-tab-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; font-weight: 500; color: rgba(6,9,12,0.25); transition: color 0.3s;
+}
+.service-tab.active .service-tab-title, .service-tab:hover .service-tab-title { color: var(--ink); }
+.service-tab-sub {
+  font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(6,9,12,0.22); margin-top: 4px;
+}
+
+.service-panel { display: none; animation: panel-in 0.5s var(--easing); }
+.service-panel.active { display: block; }
+@keyframes panel-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.service-panel-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(38px, 4vw, 58px); font-weight: 300; color: var(--ink);
+  margin-bottom: 24px; line-height: 1.05;
+}
+.service-panel-desc {
+  font-size: 16px; color: rgba(6,9,12,0.45); line-height: 1.9;
+  margin-bottom: 48px; max-width: 560px;
+}
+.service-features {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-bottom: 56px;
+}
+.service-feature {
+  background: rgba(6,9,12,0.03); padding: 28px 32px;
+  border-left: 2px solid transparent;
+  transition: border-color 0.3s, background 0.3s, transform 0.3s;
+}
+.service-feature:hover { border-left-color: var(--gold); background: rgba(6,9,12,0.05); transform: translateX(4px); }
+.sf-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+.sf-desc { font-size: 13px; color: rgba(6,9,12,0.38); line-height: 1.7; }
+
+/* ─── PROCESS ────────────────────────────────────────── */
+.process-section {
+  padding: 180px clamp(32px, 8vw, 140px);
+  background: #060B10;
+  overflow: hidden; width: 100%;
+  position: relative;
+}
+
+/* Large decorative number watermark */
+.process-section::after {
+  content: 'IV';
+  position: absolute; bottom: 20px; right: 60px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 280px; font-weight: 300;
+  color: rgba(184,150,90,0.02);
+  pointer-events: none; line-height: 1; user-select: none;
+}
+
+.process-header { margin-bottom: 100px; }
+
+.process-track {
+  position: relative;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+}
+.process-connector {
+  position: absolute; top: 9px; left: 9px; right: calc(25% + 9px);
+  height: 1px;
+  background: linear-gradient(90deg, rgba(184,150,90,0.3), rgba(184,150,90,0.05));
+  z-index: 0;
+}
+
+.process-step {
+  padding: 48px 36px; position: relative; transition: background 0.4s;
+  z-index: 1;
+}
+.process-step:hover { background: rgba(184,150,90,0.025); }
+.process-dot {
+  width: 18px; height: 18px;
+  border: 1px solid rgba(184,150,90,0.25); border-radius: 50%;
+  margin-bottom: 40px; position: relative;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.process-dot::before {
+  content: ''; position: absolute; inset: 4px;
+  border-radius: 50%; background: transparent; transition: background 0.3s;
+}
+.process-step:hover .process-dot { border-color: var(--gold); box-shadow: 0 0 20px rgba(184,150,90,0.2); }
+.process-step:hover .process-dot::before { background: var(--gold); }
+.process-num {
+  font-family: 'Cinzel', serif; font-size: 10px;
+  letter-spacing: 0.35em; color: rgba(184,150,90,0.35); margin-bottom: 20px;
+}
+.process-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 25px; font-weight: 500; color: var(--parchment); margin-bottom: 16px;
+}
+.process-desc { font-size: 13px; color: rgba(245,242,236,0.28); line-height: 1.85; }
+
+/* ─── PRACTICE AREAS ─────────────────────────────────── */
+.practice-section {
+  padding: 180px clamp(32px, 8vw, 140px);
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 2px; overflow: hidden; width: 100%;
+  position: relative;
+}
+.practice-header {
+  grid-column: 1 / -1; margin-bottom: 80px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+.practice-card {
+  padding: 80px 64px; position: relative; overflow: hidden;
+  background: rgba(184,150,90,0.015);
+  border: 1px solid rgba(184,150,90,0.07);
+  transition: background 0.6s, border-color 0.4s; cursor: none;
+}
+.practice-card:hover { background: rgba(184,150,90,0.04); border-color: rgba(184,150,90,0.14); }
+
+/* Top shimmer line */
+.practice-card::before {
+  content: ''; position: absolute; top: 0; left: -100%; right: 100%; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+  transition: left 0.8s var(--easing), right 0.8s var(--easing);
+}
+.practice-card:hover::before { left: 0; right: 0; }
+
+.practice-card-num {
+  font-family: 'Cinzel', serif; font-size: 9px;
+  letter-spacing: 0.5em; color: rgba(184,150,90,0.35);
+  margin-bottom: 60px; text-transform: uppercase;
+}
+.practice-card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(30px, 3vw, 44px); font-weight: 300; color: var(--parchment);
+  margin-bottom: 44px; line-height: 1.15;
+}
+.practice-items { list-style: none; }
+.practice-items li {
+  padding: 15px 0 15px 28px;
+  border-bottom: 1px solid rgba(184,150,90,0.05);
+  font-size: 14px; color: rgba(245,242,236,0.38);
+  position: relative; transition: color 0.3s, padding-left 0.3s;
+}
+.practice-items li:last-child { border-bottom: none; }
+.practice-items li::before {
+  content: '—'; position: absolute; left: 0;
+  color: rgba(184,150,90,0.25); font-size: 12px; transition: color 0.3s;
+}
+.practice-card:hover .practice-items li { color: rgba(245,242,236,0.55); }
+.practice-card:hover .practice-items li::before { color: var(--gold); }
+.practice-card:hover .practice-items li:hover { color: var(--parchment); padding-left: 36px; }
+.practice-deco {
+  position: absolute; bottom: -30px; right: -10px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 160px; font-weight: 300; color: rgba(184,150,90,0.04);
+  line-height: 1; pointer-events: none; font-style: italic;
+  transition: transform 0.6s var(--easing), opacity 0.6s;
+}
+.practice-card:hover .practice-deco { transform: translateY(-12px) scale(1.06); opacity: 0.07; }
+
+/* ─── MARQUEE ────────────────────────────────────────── */
+.marquee-section {
+  padding: 0; background: var(--gold);
+  overflow: hidden; width: 100%; max-width: 100%;
+}
+.marquee-track {
+  display: flex; white-space: nowrap;
+  animation: marquee 30s linear infinite; padding: 22px 0;
+}
+.marquee-track:hover { animation-play-state: paused; }
+.marquee-item {
+  display: inline-flex; align-items: center; gap: 40px; padding: 0 40px;
+  font-family: 'Cinzel', serif; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-deep);
+}
+.marquee-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-deep); opacity: 0.35; }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ─── QUOTE ───────────────────────────────────────────── */
+.quote-section {
+  padding: 180px clamp(32px, 8vw, 140px); text-align: center;
+  background: #030709; position: relative; overflow: hidden; width: 100%;
+}
+/* Radiating light effect */
+.quote-section::before {
+  content: '';
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(184,150,90,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+.quote-ornament {
+  font-family: 'Cormorant Garamond', serif; font-size: 320px; font-weight: 300;
+  color: rgba(184,150,90,0.03); line-height: 0.8;
+  position: absolute; top: 40px; left: 50%; transform: translateX(-50%);
+  pointer-events: none; user-select: none;
+}
+.quote-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 3.5vw, 52px); font-weight: 300; font-style: italic;
+  line-height: 1.5; color: var(--parchment); max-width: 920px;
+  margin: 0 auto 52px; position: relative; z-index: 1;
+}
+.quote-attribution {
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  position: relative; z-index: 1;
+}
+.quote-line { width: 40px; height: 1px; background: var(--gold); }
+.quote-name {
+  font-family: 'DM Sans', sans-serif; font-size: 11px;
+  letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold);
+}
+
+/* ─── CONTACT ────────────────────────────────────────── */
+.contact-section {
+  padding: 180px clamp(32px, 8vw, 140px);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 120px; align-items: start;
+  background: var(--ink-deep); overflow: hidden; width: 100%;
+  position: relative;
+}
+/* Atmospheric glow */
+.contact-section::before {
+  content: ''; position: absolute; bottom: 0; right: 0;
+  width: 50%; height: 60%;
+  background: radial-gradient(ellipse at bottom right, rgba(184,150,90,0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.contact-details {
+  margin-top: 60px; display: flex; flex-direction: column; gap: 0;
+}
+.contact-item {
+  padding: 36px 0; border-bottom: 1px solid rgba(184,150,90,0.07);
+  display: grid; grid-template-columns: 140px 1fr;
+  gap: 24px; align-items: start;
+  transition: padding-left 0.4s var(--easing), border-color 0.3s;
+}
+.contact-item:hover { padding-left: 16px; border-bottom-color: rgba(184,150,90,0.2); }
+.contact-item:first-child { border-top: 1px solid rgba(184,150,90,0.07); }
+.contact-label {
+  font-size: 9px; letter-spacing: 0.45em; text-transform: uppercase;
+  color: var(--gold); padding-top: 4px;
+}
+.contact-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; font-weight: 400; color: rgba(245,242,236,0.65); line-height: 1.6;
+}
+.contact-value a {
+  color: inherit; text-decoration: none; cursor: none; transition: color 0.3s;
+}
+.contact-value a:hover { color: var(--parchment); }
+
+.contact-cta-block {
+  background: rgba(184,150,90,0.04); border: 1px solid rgba(184,150,90,0.12);
+  padding: 60px; position: relative; overflow: hidden;
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+}
+.contact-cta-block::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.contact-cta-eyebrow {
+  font-size: 9px; letter-spacing: 0.5em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 32px;
+}
+.contact-cta-title {
+  font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 300;
+  color: var(--parchment); margin-bottom: 20px; line-height: 1.2;
+}
+.contact-cta-sub {
+  font-size: 13px; color: rgba(245,242,236,0.3); line-height: 1.85; margin-bottom: 48px;
+}
+.wa-btn {
+  display: inline-flex; align-items: center; gap: 14px;
+  font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 400;
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--ink-deep); background: var(--gold);
+  padding: 16px 36px; text-decoration: none; cursor: none;
+  width: 100%; justify-content: center; transition: background 0.3s;
+  margin-bottom: 16px;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+.wa-btn:hover { background: var(--gold-light); }
+.wa-icon { font-size: 16px; }
+
+/* ─── FOOTER ─────────────────────────────────────────── */
+footer {
+  padding: 48px clamp(32px, 8vw, 140px);
+  background: #010305;
+  border-top: 1px solid rgba(184,150,90,0.07);
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; overflow: hidden;
+}
+.footer-copy {
+  font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase;
+  color: rgba(245,242,236,0.18);
+}
+.footer-mark {
+  font-family: 'Cinzel', serif; font-size: 11px;
+  letter-spacing: 0.4em; color: var(--gold); opacity: 0.45;
+}
+
+/* ─── SCROLL REVEAL ──────────────────────────────────── */
+.sr {
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 1s var(--easing), transform 1s var(--easing);
+}
+.sr.visible { opacity: 1; transform: translateY(0); }
+.sr-delay-1 { transition-delay: 0.1s; }
+.sr-delay-2 { transition-delay: 0.2s; }
+.sr-delay-3 { transition-delay: 0.3s; }
+.sr-delay-4 { transition-delay: 0.4s; }
+
+/* ─── SPLIT CHARACTER ANIMATION ───────────────────────── */
+.char-split .char {
+  display: inline-block;
+  animation: char-in 0.7s var(--ease-spring) both;
+  animation-delay: calc(var(--i) * 0.04s + 2.1s);
+}
+@keyframes char-in {
+  from { opacity: 0; transform: translateY(60%) rotate(8deg); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ─── HORIZONTAL SCROLLING MARQUEE TEXT ───────────────── */
+.side-text {
+  position: fixed; right: -48px; top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  font-family: 'DM Sans', sans-serif; font-size: 9px;
+  letter-spacing: 0.5em; text-transform: uppercase;
+  color: rgba(245,242,236,0.1); z-index: 10; pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ─── PROGRESS BAR ────────────────────────────────────── */
+#progress-bar {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  z-index: 10001; transition: width 0.1s linear;
+  box-shadow: 0 0 12px rgba(184,150,90,0.5);
+  width: 0%;
+}
+
+/* ─── GOLD DIVIDER ────────────────────────────────────── */
+.gold-divider {
+  width: 100%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(184,150,90,0.3) 30%, rgba(184,150,90,0.3) 70%, transparent);
+  position: relative; z-index: 1;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .advantages-grid { grid-template-columns: repeat(2,1fr); }
+  .process-track { grid-template-columns: repeat(2,1fr); }
+  .contact-section { grid-template-columns: 1fr; gap: 60px; }
+}
+@media (max-width: 768px) {
+  nav { padding: 20px 24px; }
+  nav.scrolled { padding: 16px 24px; }
+  .nav-links { display: none; }
+  .hero { padding: 100px 24px 80px; }
+  .hero-eyebrow, .hero-headline, .hero-subtext, .hero-actions { padding-left: 0; }
+  .hero-stats-strip { display: none; }
+  .hero-scroll-indicator { right: 24px; }
+  .about { padding: 100px 24px; }
+  .advantages { padding: 0 24px 100px; }
+  .advantages-grid { grid-template-columns: 1fr; }
+  .advantage-item { border-right: none; }
+  .services-section { padding: 100px 24px; }
+  .services-layout { grid-template-columns: 1fr; gap: 40px; }
+  .services-nav { position: static; }
+  .process-track { grid-template-columns: 1fr; }
+  .process-section { padding: 100px 24px; }
+  .practice-section { grid-template-columns: 1fr; padding: 100px 24px; }
+  .practice-card { padding: 48px 32px; }
+  .contact-section { padding: 100px 24px; }
+  footer { flex-direction: column; gap: 20px; text-align: center; }
+  #cursor-orb, #cursor-trail { display: none; }
+  body { cursor: auto; }
+  .side-text { display: none; }
+}
+@media (min-width: 769px) and (max-width: 1100px) {
+  .practice-section { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-bar"></div>
+
+<!-- Cursor -->
+<div id="cursor-orb"></div>
+<div id="cursor-trail"></div>
+
+<!-- Scanlines -->
+<div class="scanlines"></div>
+
+<!-- Grain -->
+<div id="grain"></div>
+
+<!-- Ambient Canvas -->
+<canvas id="ambient-canvas"></canvas>
+
+<!-- Side text -->
+<div class="side-text">Zero Litigation™️ · Indore · Bhopal · ADR</div>
+
+<!-- Preloader -->
+<div id="preloader">
+  <div class="preloader-wordmark"><span>ZERO LITIGATION</span><sup>™️</sup></div>
+  <div class="preloader-line"></div>
+  <div class="preloader-status">Initialising Secure Environment</div>
+</div>
+
+<!-- Navigation -->
+<nav id="navbar">
+  <div class="nav-logo interactive">
+    <img src="1000037932.png" alt="Zero Litigation">
+  </div>
+  <div class="nav-links">
+    <a href="#about" class="interactive">Overview</a>
+    <a href="#services" class="interactive">Services</a>
+    <a href="#process" class="interactive">Process</a>
+    <a href="#practice" class="interactive">Practice</a>
+    <a href="#contact" class="nav-cta interactive">Begin Consultation</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-ornament"></div>
+  <div class="hero-vline"></div>
+
+  <!-- Particles -->
+  <div class="hero-particles" id="particles"></div>
+
+  <div class="hero-eyebrow">Alternative Dispute Resolution</div>
+
+  <h1 class="hero-headline">
+    <span class="line"><span>Resolve Every</span></span>
+    <span class="line"><span>Dispute <em class="italic-word">Without</em></span></span>
+    <span class="line"><span>the Courtroom.</span></span>
+  </h1>
+
+  <p class="hero-subtext">
+    India's foremost ADR platform. Confidential, decisive, and engineered for professionals who cannot afford delay.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#contact" class="btn-primary interactive">
+      <span>Begin Consultation</span>
+      <span class="icon">→</span>
+    </a>
+    <a href="#services" class="btn-ghost interactive">
+      <span>Explore Services</span>
+      <div class="icon">↓</div>
+    </a>
+  </div>
+
+  <!-- Stats strip at bottom of hero -->
+  <div class="hero-stats-strip">
+    <div class="hero-stat">
+      <div>
+        <div class="hero-stat-num"><span class="count-up" data-target="3">0</span><sup>×</sup></div>
+        <div class="hero-stat-label">Faster Than<br>Litigation</div>
+      </div>
+    </div>
+    <div class="hero-stat">
+      <div>
+        <div class="hero-stat-num"><span class="count-up" data-target="100">0</span><sup>%</sup></div>
+        <div class="hero-stat-label">Confidential<br>Process</div>
+      </div>
+    </div>
+    <div class="hero-stat">
+      <div>
+        <div class="hero-stat-num">2<sup> Cities</sup></div>
+        <div class="hero-stat-label">Indore &amp;<br>Bhopal</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- Gold Divider -->
+<div class="gold-divider"></div>
+
+<!-- About -->
+<section id="about" class="about">
+  <div class="about-content">
+    <div class="section-eyebrow sr">Who We Are</div>
+    <h2 class="section-title sr">Where law meets<br><em style="font-style:italic; color:var(--gold-light)">finesse.</em></h2>
+    <p class="about-lead sr">
+      "The most sophisticated disputes demand the most refined resolution — not a courtroom, but a conversation conducted with precision."
+    </p>
+    <p class="about-body sr">
+      Zero Litigation™️ is a premier platform connecting clients with expertly trained mediators and highly trained experts. We deliver structured, highly efficient, and strictly confidential dispute resolution entirely outside the traditional courtroom — preserving relationships, reputations, and time.
+    </p>
+    <a href="#contact" class="btn-primary interactive sr" style="display:inline-flex; width:auto;">
+      <span>Request Private Consultation</span>
+      <span class="icon">→</span>
+    </a>
+  </div>
+</section>
+
+<!-- Gold Divider -->
+<div class="gold-divider"></div>
+
+<!-- Advantages -->
+<section class="advantages" id="advantages">
+  <div class="advantages-header sr">
+    <div>
+      <div class="section-eyebrow">The Difference</div>
+      <h2 class="section-title">Why Zero Litigation™️</h2>
+    </div>
+    <p style="font-size:14px; color:rgba(245,242,236,0.28); max-width:300px; text-align:right; line-height:1.9;">
+      Four pillars that define why the region's most discerning clients choose us.
+    </p>
+  </div>
+  <div class="advantages-grid">
+    <div class="advantage-item sr sr-delay-1">
+      <div class="adv-num">01</div>
+      <div class="adv-icon">⚡</div>
+      <div class="adv-title">Accelerated Resolution</div>
+      <div class="adv-desc">Disputes resolved in weeks, not years. Our structured process eliminates procedural delay at every stage.</div>
+    </div>
+    <div class="advantage-item sr sr-delay-2">
+      <div class="adv-num">02</div>
+      <div class="adv-icon">◈</div>
+      <div class="adv-title">Radical Cost Efficiency</div>
+      <div class="adv-desc">Fraction of litigation costs. No prolonged hearings, no excessive legal fees — just decisive resolution.</div>
+    </div>
+    <div class="advantage-item sr sr-delay-3">
+      <div class="adv-num">03</div>
+      <div class="adv-icon">🔒</div>
+      <div class="adv-title">Absolute Confidentiality</div>
+      <div class="adv-desc">Every session, every document, every outcome — protected by strict privilege and professional secrecy.</div>
+    </div>
+    <div class="advantage-item sr sr-delay-4">
+      <div class="adv-num">04</div>
+      <div class="adv-icon">◇</div>
+      <div class="adv-title">Relationship Preservation</div>
+      <div class="adv-desc">We engineer solutions that protect ongoing relationships — because business and family ties have lasting value.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Marquee -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <span class="marquee-item">Mediation<div class="marquee-dot"></div></span>
+    <span class="marquee-item">Strategic Negotiation<div class="marquee-dot"></div></span>
+    <span class="marquee-item">Conciliation<div class="marquee-dot"></div></span>
+    <span class="marquee-item">ADR Consulting<div class="marquee-dot"></div></span>
+    <span class="marquee-item">Commercial Disputes<div class="marquee-dot"></div></span>
+    <span class="marquee-item">Family Mediation<div class="marquee-dot"></div></span>
+    <span class="marquee-item">Zero Litigation™️<div class="marquee-dot"></div></span>
+    <span class="marquee-item">Mediation<div class="marquee-dot"></div></span>
+    <span class="marquee-item">Strategic Negotiation<div class="marquee-dot"></div></span>
+    <span class="marquee-item">Conciliation<div class="marquee-dot"></div></span>
+    <span class="marquee-item">ADR Consulting<div class="marquee-dot"></div></span>
+    <span class="marquee-item">Commercial Disputes<div class="marquee-dot"></div></span>
+    <span class="marquee-item">Family Mediation<div class="marquee-dot"></div></span>
+    <span class="marquee-item">Zero Litigation™️<div class="marquee-dot"></div></span>
+  </div>
+</div>
+
+<!-- Services -->
+<section id="services" class="services-section">
+  <div class="section-eyebrow sr">Core Services</div>
+  <h2 class="section-title sr">What We Offer</h2>
+
+  <div class="services-layout">
+    <div class="services-nav sr">
+      <div class="service-tab active interactive" data-target="mediation">
+        <div class="service-tab-title">Mediation</div>
+        <div class="service-tab-sub">Neutral Facilitation</div>
+      </div>
+      <div class="service-tab interactive" data-target="negotiation">
+        <div class="service-tab-title">Strategic Negotiation</div>
+        <div class="service-tab-sub">Outcome Engineering</div>
+      </div>
+      <div class="service-tab interactive" data-target="conciliation">
+        <div class="service-tab-title">Conciliation</div>
+        <div class="service-tab-sub">Proactive Settlement</div>
+      </div>
+    </div>
+
+    <div class="services-content sr sr-delay-2">
+      <div class="service-panel active" id="panel-mediation">
+        <div class="service-panel-title">Professional<br>Mediation</div>
+        <p class="service-panel-desc">A structured, voluntary process in which a neutral third-party mediator facilitates dialogue between disputing parties — guiding them toward a mutually acceptable resolution without imposing decisions.</p>
+        <div class="service-features">
+          <div class="service-feature">
+            <div class="sf-title">Neutral Facilitation</div>
+            <div class="sf-desc">Impartial mediators with deep domain expertise.</div>
+          </div>
+          <div class="service-feature">
+            <div class="sf-title">Confidential Sessions</div>
+            <div class="sf-desc">Protected dialogue in a privileged environment.</div>
+          </div>
+          <div class="service-feature">
+            <div class="sf-title">Binding Settlement</div>
+            <div class="sf-desc">Legally enforceable outcomes, not informal promises.</div>
+          </div>
+          <div class="service-feature">
+            <div class="sf-title">Rapid Timeline</div>
+            <div class="sf-desc">Most cases resolved within 2–6 sessions.</div>
+          </div>
+        </div>
+        <a href="#contact" class="btn-primary interactive" style="display:inline-flex; width:auto; background: var(--ink); color: var(--parchment);">
+          <span>Initiate Mediation</span>
+          <span class="icon" style="color:var(--gold)">→</span>
+        </a>
+      </div>
+
+      <div class="service-panel" id="panel-negotiation">
+        <div class="service-panel-title">Strategic<br>Negotiation</div>
+        <p class="service-panel-desc">Expert-led negotiation strategy designed to achieve optimal outcomes. We analyse positions, identify leverage, and engineer solutions that protect your core interests without escalation.</p>
+        <div class="service-features">
+          <div class="service-feature">
+            <div class="sf-title">Interest Mapping</div>
+            <div class="sf-desc">Deep analysis of each party's underlying interests.</div>
+          </div>
+          <div class="service-feature">
+            <div class="sf-title">Leverage Analysis</div>
+            <div class="sf-desc">Understanding positions to maximise outcomes.</div>
+          </div>
+          <div class="service-feature">
+            <div class="sf-title">Document Drafting</div>
+            <div class="sf-desc">Precise settlement agreements crafted to last.</div>
+          </div>
+          <div class="service-feature">
+            <div class="sf-title">Post-Settlement Support</div>
+            <div class="sf-desc">Ensuring compliance and long-term resolution.</div>
+          </div>
+        </div>
+        <a href="#contact" class="btn-primary interactive" style="display:inline-flex; width:auto; background: var(--ink); color: var(--parchment);">
+          <span>Start Negotiation</span>
+          <span class="icon" style="color:var(--gold)">→</span>
+        </a>
+      </div>
+
+      <div class="service-panel" id="panel-conciliation">
+        <div class="service-panel-title">Expert<br>Conciliation</div>
+        <p class="service-panel-desc">A proactive form of dispute resolution where our conciliator takes a more active role — suggesting solutions, proposing terms, and steering parties toward settlement with authority and expertise.</p>
+        <div class="service-features">
+          <div class="service-feature">
+            <div class="sf-title">Active Intervention</div>
+            <div class="sf-desc">Conciliator proposes concrete settlement terms.</div>
+          </div>
+          <div class="service-feature">
+            <div class="sf-title">Expert Guidance</div>
+            <div class="sf-desc">Specialist knowledge applied to complex disputes.</div>
+          </div>
+          <div class="service-feature">
+            <div class="sf-title">Expedited Process</div>
+            <div class="sf-desc">Designed for disputes requiring swift resolution.</div>
+          </div>
+          <div class="service-feature">
+            <div class="sf-title">Relationship-First</div>
+            <div class="sf-desc">Preserving commercial and personal bonds.</div>
+          </div>
+        </div>
+        <a href="#contact" class="btn-primary interactive" style="display:inline-flex; width:auto; background: var(--ink); color: var(--parchment);">
+          <span>Request Conciliation</span>
+          <span class="icon" style="color:var(--gold)">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Gold Divider -->
+<div class="gold-divider" style="background:linear-gradient(90deg,transparent,rgba(6,9,12,0.3) 30%,rgba(6,9,12,0.3) 70%,transparent);"></div>
+
+<!-- Process -->
+<section id="process" class="process-section">
+  <div class="process-header">
+    <div class="section-eyebrow sr">How It Works</div>
+    <h2 class="section-title sr">The Zero Litigation™️ Process</h2>
+  </div>
+  <div class="process-track">
+    <div class="process-connector"></div>
+    <div class="process-step sr sr-delay-1">
+      <div class="process-dot"></div>
+      <div class="process-num">Step 01</div>
+      <div class="process-title">Initial Consultation</div>
+      <div class="process-desc">A confidential discussion to understand the nature, scope, and urgency of your dispute. We assess fit and recommend the appropriate mechanism.</div>
+    </div>
+    <div class="process-step sr sr-delay-2">
+      <div class="process-dot"></div>
+      <div class="process-num">Step 02</div>
+      <div class="process-title">Case Assessment</div>
+      <div class="process-desc">Thorough review of documentation, positions, and interests. We identify underlying concerns and design a bespoke resolution framework.</div>
+    </div>
+    <div class="process-step sr sr-delay-3">
+      <div class="process-dot"></div>
+      <div class="process-num">Step 03</div>
+      <div class="process-title">Structured ADR Sessions</div>
+      <div class="process-desc">Facilitated sessions conducted with discretion and precision. Each session moves deliberately toward resolution with our expert guidance.</div>
+    </div>
+    <div class="process-step sr sr-delay-4">
+      <div class="process-dot"></div>
+      <div class="process-num">Step 04</div>
+      <div class="process-title">Settlement</div>
+      <div class="process-desc">A final, legally sound agreement that all parties can rely upon. Drafted with precision, signed with confidence, and built to last.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Practice Areas -->
+<section id="practice" class="practice-section">
+  <div class="practice-header">
+    <div>
+      <div class="section-eyebrow sr">Expertise</div>
+      <h2 class="section-title sr">Areas of Practice</h2>
+    </div>
+  </div>
+  <div class="practice-card sr sr-delay-1 interactive">
+    <div class="practice-card-num">Practice Area 01</div>
+    <div class="practice-card-title">Commercial<br>Disputes</div>
+    <ul class="practice-items">
+      <li>B2B &amp; Intra-Firm Conflicts</li>
+      <li>Breach of Contract Issues</li>
+      <li>Financial &amp; Investment Disputes</li>
+      <li>Corporate Restructuring Conflicts</li>
+      <li>Vendor &amp; Partnership Disagreements</li>
+      <li><em style="color:var(--gold-light); font-style:italic;">& more</em></li>
+    </ul>
+    <div class="practice-deco">Commercial</div>
+  </div>
+  <div class="practice-card sr sr-delay-2 interactive">
+    <div class="practice-card-num">Practice Area 02</div>
+    <div class="practice-card-title">Family<br>Disputes</div>
+    <ul class="practice-items">
+      <li>Personal &amp; Domestic Conflicts</li>
+      <li>Marital Asset Division</li>
+      <li>Inheritance &amp; Estate Disputes</li>
+      <li>Confidential Family Mediation</li>
+      <li><em style="color:var(--gold-light); font-style:italic;">& more</em></li>
+    </ul>
+    <div class="practice-deco">Family</div>
+  </div>
+</section>
+
+<!-- Quote -->
+<div class="quote-section">
+  <div class="quote-ornament">"</div>
+  <p class="quote-text sr">
+    "The measure of a civilised society is not how fiercely it fights its battles, but how gracefully it resolves its differences."
+  </p>
+  <div class="quote-attribution sr">
+    <div class="quote-line"></div>
+    <div class="quote-name">The Zero Litigation™️ Philosophy</div>
+    <div class="quote-line"></div>
+  </div>
+</div>
+
+<!-- Contact -->
+<section id="contact" class="contact-section">
+  <div class="contact-left">
+    <div class="section-eyebrow sr">Get In Touch</div>
+    <h2 class="section-title sr">Begin Your<br><em style="font-style:italic; color:var(--gold-light)">Resolution.</em></h2>
+    <p class="sr" style="font-size:15px; color:rgba(245,242,236,0.3); line-height:1.9; margin-top:24px; max-width:420px;">
+      Every complex dispute has an elegant solution. Contact us to discuss your situation in complete confidence.
+    </p>
+    <div class="contact-details">
+      <div class="contact-item sr">
+        <div class="contact-label">Founder</div>
+        <div class="contact-value">Shivansh Mishra</div>
+      </div>
+      <div class="contact-item sr sr-delay-1">
+        <div class="contact-label">Telephone</div>
+        <div class="contact-value"><a href="tel:+919522344562" class="interactive">+91 95223 44562</a></div>
+      </div>
+      <div class="contact-item sr sr-delay-2">
+        <div class="contact-label">Electronic</div>
+        <div class="contact-value"><a href="mailto:zerolitigation@gmail.com" class="interactive">zerolitigation@gmail.com</a></div>
+      </div>
+      <div class="contact-item sr sr-delay-3">
+        <div class="contact-label">Offices</div>
+        <div class="contact-value">Radio Colony, Indore MP 452001<br>Arvind Vihar, Bhopal M.P 462043</div>
+      </div>
+    </div>
+  </div>
+  <div class="contact-right sr">
+    <div class="contact-cta-block">
+      <div class="contact-cta-eyebrow">Preferred Channel</div>
+      <div class="contact-cta-title">Initiate a Secure<br>WhatsApp Consultation</div>
+      <p class="contact-cta-sub">Connect with our team directly. All communications are held in the strictest professional confidence.</p>
+      <a href="https://wa.me/919522344562" target="_blank" rel="noopener noreferrer" class="wa-btn interactive">
+        <span class="wa-icon">◈</span>
+        <span>Open Secure WhatsApp Chat</span>
+      </a>
+      <p style="font-size:11px; color:rgba(245,242,236,0.18); text-align:center; letter-spacing:0.1em;">
+        Or call directly at <a href="tel:+919522344562" style="color:rgba(184,150,90,0.45); text-decoration:none; cursor:none;">+91 95223 44562</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-copy">&copy; 2025 Zero Litigation™️ &nbsp;·&nbsp; All Rights Reserved &nbsp;·&nbsp; Indore &amp; Bhopal</div>
+  <div class="footer-mark">ZL™️</div>
+</footer>
+
+<script>
+// ─── PRELOADER ─────────────────────────────────────────
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const p = document.getElementById('preloader');
+    p.classList.add('exit');
+    p.addEventListener('animationend', () => p.remove());
+  }, 2200);
+});
+
+// ─── PROGRESS BAR ──────────────────────────────────────
+const progressBar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (scrollTop / docHeight) * 100;
+  progressBar.style.width = progress + '%';
+});
+
+// ─── CURSOR ────────────────────────────────────────────
+const orb = document.getElementById('cursor-orb');
+const trail = document.getElementById('cursor-trail');
+let mx = -100, my = -100, tx = -100, ty = -100;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+function animateCursor() {
+  tx += (mx - tx) * 0.12;
+  ty += (my - ty) * 0.12;
+  orb.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+  trail.style.transform = `translate(${tx}px, ${ty}px) translate(-50%, -50%)`;
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+document.querySelectorAll('.interactive').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('hovered'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('hovered'));
+});
+
+// ─── NAV SCROLL ────────────────────────────────────────
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ─── SCROLL REVEAL ─────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.sr').forEach(el => observer.observe(el));
+
+// ─── COUNT UP ──────────────────────────────────────────
+const countObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const el = entry.target;
+    const target = +el.getAttribute('data-target');
+    let current = 0; const inc = target / 60;
+    const timer = setInterval(() => {
+      current += inc;
+      if (current >= target) { current = target; clearInterval(timer); }
+      el.textContent = Math.floor(current);
+    }, 16);
+    countObserver.unobserve(el);
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.count-up').forEach(el => countObserver.observe(el));
+
+// ─── SERVICE TABS ──────────────────────────────────────
+document.querySelectorAll('.service-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.getAttribute('data-target');
+    document.querySelectorAll('.service-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.service-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + target).classList.add('active');
+  });
+});
+
+// ─── PARTICLES ─────────────────────────────────────────
+const particleContainer = document.getElementById('particles');
+function createParticle() {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random() * 100 + '%';
+  p.style.bottom = Math.random() * 30 + '%';
+  const dur = 6 + Math.random() * 8;
+  const delay = Math.random() * 6;
+  const drift = (Math.random() - 0.5) * 60 + 'px';
+  const maxOp = 0.2 + Math.random() * 0.4;
+  p.style.setProperty('--dur', dur + 's');
+  p.style.setProperty('--delay', delay + 's');
+  p.style.setProperty('--drift', drift);
+  p.style.setProperty('--max-op', maxOp);
+  particleContainer.appendChild(p);
+}
+for (let i = 0; i < 30; i++) createParticle();
+
+// ─── AMBIENT LIGHT ─────────────────────────────────────
+const canvas = document.getElementById('ambient-canvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+const orbs = [
+  { x: 0.25, y: 0.35, r: 0.55, color: '11,28,42', speed: 0.0003 },
+  { x: 0.75, y: 0.65, r: 0.45, color: '184,150,90', speed: 0.0002 },
+  { x: 0.5, y: 0.5, r: 0.65, color: '4,12,20', speed: 0.0004 },
+  { x: 0.1, y: 0.8, r: 0.3, color: '184,150,90', speed: 0.0005 },
+];
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+window.addEventListener('resize', resize); resize();
+function drawAmbient(t) {
+  ctx.clearRect(0,0,W,H);
+  orbs.forEach(o => {
+    const x = (o.x + Math.sin(t * o.speed * 1000) * 0.08) * W;
+    const y = (o.y + Math.cos(t * o.speed * 800) * 0.07) * H;
+    const r = o.r * Math.min(W,H);
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+    grad.addColorStop(0, `rgba(${o.color},0.07)`);
+    grad.addColorStop(1, `rgba(${o.color},0)`);
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill();
+  });
+  requestAnimationFrame(drawAmbient);
+}
+requestAnimationFrame(drawAmbient);
+
+// ─── MAGNETIC BUTTONS ──────────────────────────────────
+document.querySelectorAll('.btn-primary, .wa-btn, .nav-cta').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const rect = btn.getBoundingClientRect();
+    const dx = e.clientX - (rect.left + rect.width/2);
+    const dy = e.clientY - (rect.top + rect.height/2);
+    btn.style.transform = `translate(${dx*0.15}px, ${dy*0.2}px)`;
+  });
+  btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+});
+
+// ─── PARALLAX HERO ELEMENTS ────────────────────────────
+const heroOrnament = document.querySelector('.hero-ornament');
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  if (heroOrnament) {
+    heroOrnament.style.transform = `translateY(calc(-50% + ${scrollY * 0.15}px))`;
+  }
+});
+
+// ─── TILT EFFECT ON PRACTICE CARDS ─────────────────────
+document.querySelectorAll('.practice-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    card.style.transform = `perspective(1000px) rotateY(${x * 4}deg) rotateX(${-y * 4}deg) translateZ(4px)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg) translateZ(0px)';
+    card.style.transition = 'transform 0.6s var(--easing)';
+  });
+  card.addEventListener('mouseenter', () => {
+    card.style.transition = 'transform 0.15s ease';
+  });
+});
+</script>
+</body>
+</html>
