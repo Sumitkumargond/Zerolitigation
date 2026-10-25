@@ -1,0 +1,10 @@
+{
+  "name": "zerolitigation-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Zero Litigation™ website: static HTML, CSS and JS, served and bundled with Bun.",
+  "scripts": {
+    "dev": "bun ./src/*.html",
+    "build": "rm -rf dist && bun build ./src/*.html --outdir dist --minify --external '*.woff2' --asset-naming '[dir]/[name].[ext]' && cp -r src/fonts dist/"
+  }
+}
