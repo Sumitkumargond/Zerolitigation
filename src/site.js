@@ -5,7 +5,7 @@
 
   /* ── Terms & Conditions acceptance ──
      Bump TC_VERSION whenever the terms change so every visitor is asked again. */
-  const TC_VERSION = '2026-10';
+  const TC_VERSION = '2026-10-brief';
   const TC_KEY = 'zl-terms-accepted';
   let tcAccepted = false;
   try { tcAccepted = localStorage.getItem(TC_KEY) === TC_VERSION; } catch {}
@@ -24,31 +24,23 @@
     gate.innerHTML = `
       <div class="gate-head">
         <h2 id="gate-title" tabindex="-1">Terms &amp; Conditions</h2>
-        <p id="gate-desc">Please read and accept our Terms &amp; Conditions to use Zero Litigation™.</p>
+        <p id="gate-desc">Please review this information before continuing.</p>
       </div>
       <div class="gate-main">
         <span class="gate-thread" aria-hidden="true"></span>
-        <div class="gate-body" tabindex="0" role="region" aria-label="Terms and Conditions text">
-          <p>Loading the Terms &amp; Conditions…</p>
+        <div class="gate-body" tabindex="0" role="region" aria-label="Platform information">
+          <div class="legal gate-summary">
+            <p>We are an online and offline platform that connects individuals, startups, and corporates with professionals.</p>
+            <p>We are not a law firm and do not provide legal services or legal advice.</p>
+            <p><a href="/terms" target="_blank" rel="noopener">Terms &amp; Conditions</a></p>
+          </div>
         </div>
       </div>
       <div class="gate-foot">
-        <p>Scroll to read the full terms, then accept to continue.</p>
+        <p>View the full Terms &amp; Conditions using the link above.</p>
         <button type="button" class="btn btn-primary">I Accept</button>
       </div>`;
     document.body.append(gate);
-
-    const body = $('.gate-body', gate);
-    fetch('/terms')
-      .then(r => (r.ok ? r.text() : Promise.reject(r.status)))
-      .then(html => {
-        const article = new DOMParser().parseFromString(html, 'text/html').getElementById('terms-content');
-        if (!article) throw new Error('terms-content missing');
-        body.replaceChildren(article);
-      })
-      .catch(() => {
-        body.innerHTML = '<p>Please read our <a href="/terms" target="_blank" rel="noopener">Terms &amp; Conditions</a> before continuing.</p>';
-      });
 
     // Escape must not dismiss the gate; browsers that force-close it get it reopened.
     gate.addEventListener('cancel', e => e.preventDefault());
@@ -67,7 +59,7 @@
       if (e.key === TC_KEY && e.newValue === TC_VERSION) { tcAccepted = true; gate.close(); }
     });
 
-    // Long content: start focus on the heading (APG dialog pattern); Tab reaches the text and Accept.
+    // Start focus on the heading (APG dialog pattern); Tab reaches the summary and Accept button.
     gate.showModal();
     $('#gate-title', gate).focus();
   }
